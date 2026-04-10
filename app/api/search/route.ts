@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const condition = searchParams.get("condition");
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
-  const page = parseInt(searchParams.get("page") || "1");
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
   const pageSize = 10;
 
   const where: Prisma.ListingWhereInput = {
@@ -20,13 +20,7 @@ export async function GET(req: NextRequest) {
   if (condition) where.condition = condition as Condition;
   if (minPrice) where.price = { gte: parseFloat(minPrice) };
   if (maxPrice) {
-    if (typeof where.price === 'number') {
-      // Handle the case where where.price might have been a number, 
-      // though in our where input construction it should be an object or undefined.
-      where.price = { lte: parseFloat(maxPrice) };
-    } else {
-      where.price = { ...(where.price as object), lte: parseFloat(maxPrice) };
-    }
+    where.price = { ...(where.price as object), lte: parseFloat(maxPrice) };
   }
 
   const listings = await prisma.listing.findMany({

@@ -1,163 +1,162 @@
 'use client';
 
-import { Search, Radio, Activity, Zap, Shield } from 'lucide-react';
+import { Search, Sparkles, TrendingUp, ShieldCheck, Heart } from 'lucide-react';
 import { SignInButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import Form from 'next/form';
 import { motion } from 'motion/react';
 
-const DecorativeGrid = () => (
-  <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-20">
-    <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] bg-[size:64px_64px]" />
+const DecorativeOrbs = () => (
+  <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-30">
+    <div className="bg-signal absolute -top-40 -left-40 h-96 w-96 rounded-full blur-[120px]" />
+    <div className="bg-mint absolute top-1/2 -right-40 h-80 w-80 rounded-full blur-[100px]" />
+    <div className="bg-lavender absolute -bottom-40 left-1/2 h-96 w-96 rounded-full blur-[120px]" />
   </div>
 );
 
 export default function Home() {
   return (
-    <div className="bg-obsidian text-foreground selection:bg-signal/30 relative min-h-screen font-sans">
-      <DecorativeGrid />
+    <div className="bg-obsidian text-foreground selection:bg-rose-100 relative min-h-screen font-sans">
+      <DecorativeOrbs />
 
-      <header className="border-border-subtle bg-obsidian/50 relative z-10 flex items-center justify-between border-b p-8 backdrop-blur-md">
+      <header className="relative z-10 flex items-center justify-between p-8">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           className="flex items-center gap-3"
         >
-          <div className="bg-signal flex h-8 w-8 items-center justify-center rounded-sm">
-            <Radio className="text-obsidian h-5 w-5" />
+          <div className="bg-signal shadow-soft flex h-10 w-10 items-center justify-center rounded-2xl">
+            <Sparkles className="text-white h-5 w-5" />
           </div>
           <Link
             href="/"
-            className="text-3xl font-black tracking-tighter uppercase italic"
+            className="text-serif text-2xl font-black tracking-tight"
           >
-            GEAR<span className="text-signal">WATCH</span>
+            Gear<span className="text-rose-400">Watch</span>
           </Link>
         </motion.div>
 
-        <nav className="flex items-center gap-8 font-mono text-xs font-bold tracking-widest uppercase">
+        <nav className="flex items-center gap-8 font-medium text-sm">
           <Link
             href="/dashboard"
-            className="hover:text-signal flex items-center gap-2 transition-colors"
+            className="text-foreground/60 hover:text-foreground transition-colors"
           >
-            <span className="text-[10px] opacity-40">01//</span> Dashboard
+            Dashboard
           </Link>
-          <div className="bg-border-subtle h-4 w-px" />
           <SignInButton mode="modal">
-            <button className="bg-signal text-obsidian border-signal border-2 px-8 py-3 text-sm font-black tracking-widest uppercase shadow-[0_0_20px_rgba(255,92,0,0.5)] transition-all hover:bg-white">
-              SECURE_LOGIN
+            <button className="bg-white text-foreground soft-shadow hover-lift rounded-full px-8 py-3 text-sm font-bold transition-all">
+              Sign In
             </button>
           </SignInButton>
         </nav>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-8 pt-32 pb-20">
-        <section className="relative">
+      <main className="relative z-10 mx-auto max-w-6xl px-8 pt-24 pb-20">
+        <section className="text-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="text-signal mb-4 flex items-center gap-2 font-mono text-sm font-bold tracking-[0.3em] uppercase">
-              <Activity className="h-4 w-4 animate-pulse" />
-              Real-time Market Pulse
+            <div className="bg-white/50 border-white/80 soft-shadow mx-auto mb-8 flex w-fit items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-bold tracking-wide text-rose-400 backdrop-blur-sm">
+              <TrendingUp className="h-3.5 w-3.5" />
+              Intelligent Gear Analysis
             </div>
 
-            <h1 className="mb-12 text-7xl leading-[0.85] font-black tracking-tighter uppercase italic md:text-9xl">
-              ANALYZE.
-              <br />
-              <span className="text-signal drop-shadow-[0_0_30px_rgba(255,92,0,0.3)]">
-                OPTIMIZE.
-              </span>
-              <br />
-              ACQUIRE.
+            <h1 className="text-serif mb-8 text-6xl leading-[1.1] font-black tracking-tight md:text-8xl">
+              Market insight, <br />
+              <span className="text-rose-300 italic">curated with love.</span>
             </h1>
+
+            <p className="text-foreground/50 mx-auto mb-12 max-w-xl text-lg font-medium leading-relaxed">
+              Experience a softer way to track your favorite gear. We blend 
+              advanced intelligence with a refined interface to help you find 
+              the perfect instruments at the perfect price.
+            </p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="max-w-3xl"
+            transition={{ delay: 0.2, duration: 1 }}
+            className="mx-auto max-w-2xl"
           >
-            <p className="text-foreground/60 mb-12 max-w-2xl text-xl leading-relaxed font-medium">
-              The high-performance terminal for serious collectors. Track market
-              volatility, predict fair value, and intercept listings before the
-              algorithm catches up.
-            </p>
-
             <Form
               action="/search"
-              className="group bg-machine border-border-subtle focus-within:border-signal relative flex items-center border transition-all duration-500"
+              className="bg-white soft-shadow focus-within:ring-rose-200 group flex items-center rounded-[2.5rem] p-2 transition-all duration-500 focus-within:ring-4"
             >
-              <div className="bg-signal absolute top-0 -left-[1px] h-full w-[2px] origin-top scale-y-0 transition-transform duration-500 group-focus-within:scale-y-100" />
-
-              <div className="text-foreground/30 pl-6">
-                <Search size={24} />
+              <div className="text-foreground/20 pl-6">
+                <Search size={22} />
               </div>
 
               <input
                 name="q"
                 type="text"
-                placeholder="EXECUTE SEARCH: BRAND, MODEL, SKU..."
-                className="placeholder:text-foreground/20 w-full bg-transparent p-6 font-mono text-sm tracking-widest uppercase outline-none"
+                placeholder="Find your next instrument..."
+                className="placeholder:text-foreground/20 w-full bg-transparent p-4 font-medium text-lg outline-none"
               />
 
               <button
                 type="submit"
-                className="bg-signal text-obsidian h-full px-10 py-6 font-black tracking-widest uppercase transition-colors hover:bg-white"
+                className="bg-signal hover:bg-rose-200 text-rose-900 h-14 rounded-full px-10 font-bold transition-all"
               >
-                EXECUTE
+                Scan Market
               </button>
             </Form>
 
-            <div className="text-foreground/40 mt-6 flex gap-6 font-mono text-[10px] tracking-widest uppercase">
+            <div className="text-foreground/30 mt-8 flex justify-center gap-8 text-[11px] font-bold uppercase tracking-widest">
               <div className="flex items-center gap-2">
-                <div className="bg-signal h-1 w-1 rounded-full" />
-                Index: 1,248 Active Listings
+                <div className="bg-mint h-2 w-2 rounded-full" />
+                1,248 Active
               </div>
               <div className="flex items-center gap-2">
-                <div className="bg-signal h-1 w-1 rounded-full" />
-                Latency: 12ms
+                <div className="bg-rose-200 h-2 w-2 rounded-full" />
+                Real-time
               </div>
               <div className="flex items-center gap-2">
-                <div className="bg-signal h-1 w-1 rounded-full" />
-                Status: Operational
+                <div className="bg-lavender h-2 w-2 rounded-full" />
+                Verified
               </div>
             </div>
           </motion.div>
         </section>
 
-        <section className="gap-1px bg-border-subtle border-border-subtle mt-40 grid grid-cols-1 border md:grid-cols-3">
+        <section className="mt-40 grid grid-cols-1 gap-8 md:grid-cols-3">
           {[
             {
-              icon: Zap,
-              label: 'Neural Engine',
-              desc: 'Proprietary Gemini-driven market sentiment analysis.',
+              icon: Sparkles,
+              label: 'Neural Insights',
+              desc: 'Gentle market sentiment analysis powered by Gemini 1.5.',
+              color: 'bg-mint/30',
             },
             {
-              icon: Activity,
-              label: 'Price Delta',
-              desc: 'Minute-by-minute tracking of marketplace fluctuations.',
+              icon: TrendingUp,
+              label: 'Price Trajectory',
+              desc: 'Follow market trends with clean, simplified visualizations.',
+              color: 'bg-signal/30',
             },
             {
-              icon: Shield,
-              label: 'Intercept',
-              desc: 'Automated alerts for items below fair market value.',
+              icon: ShieldCheck,
+              label: 'Fair Value',
+              desc: 'Automated verification to ensure you never overpay.',
+              color: 'bg-lavender/30',
             },
           ].map((feature, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               viewport={{ once: true }}
-              className="bg-obsidian hover:bg-machine group cursor-crosshair p-10 transition-colors"
+              className="puffy-panel hover-lift cursor-pointer"
             >
-              <feature.icon className="text-signal mb-8 h-8 w-8 transition-transform group-hover:scale-110" />
-              <h3 className="text-signal mb-4 font-mono text-xs font-bold tracking-[0.3em] uppercase">
-                [{i.toString().padStart(2, '0')}] {feature.label}
+              <div className={`${feature.color} mb-6 flex h-14 w-14 items-center justify-center rounded-2xl`}>
+                <feature.icon className="h-7 w-7 text-foreground/70" />
+              </div>
+              <h3 className="text-serif mb-3 text-xl font-bold tracking-tight">
+                {feature.label}
               </h3>
-              <p className="text-foreground/50 text-sm leading-relaxed">
+              <p className="text-foreground/50 text-sm leading-relaxed font-medium">
                 {feature.desc}
               </p>
             </motion.div>
@@ -165,21 +164,18 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-border-subtle bg-machine/50 relative z-10 mt-20 border-t p-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 md:flex-row">
-          <div className="text-foreground/30 font-mono text-[10px] tracking-[0.4em] uppercase">
-            &copy; 2026 GearWatch Terminal // System V1.0.4
+      <footer className="mt-40 border-t border-rose-100 p-12 text-center">
+        <div className="flex flex-col items-center gap-6">
+          <div className="text-serif text-2xl font-black opacity-20">
+            GearWatch
           </div>
-          <div className="flex gap-8">
-            {['Status', 'Privacy', 'Legal', 'Source'].map((link) => (
-              <a
-                key={link}
-                href="#"
-                className="text-foreground/30 hover:text-signal font-mono text-[10px] tracking-widest uppercase transition-colors"
-              >
-                {link}
-              </a>
-            ))}
+          <div className="flex gap-8 text-xs font-bold uppercase tracking-widest text-foreground/20">
+            <Link href="#" className="hover:text-rose-400 transition-colors">Insights</Link>
+            <Link href="#" className="hover:text-rose-400 transition-colors">Privacy</Link>
+            <Link href="#" className="hover:text-rose-400 transition-colors">Connect</Link>
+          </div>
+          <div className="text-[10px] font-bold text-foreground/10 uppercase tracking-[0.3em]">
+            Crafted for enthusiasts // v1.2.0
           </div>
         </div>
       </footer>

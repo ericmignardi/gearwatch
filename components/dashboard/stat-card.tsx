@@ -1,4 +1,5 @@
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, TrendingUp } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface StatCardProps {
   label: string;
@@ -8,16 +9,24 @@ interface StatCardProps {
 
 export function StatCard({ label, value, unit }: StatCardProps) {
   return (
-    <div className="bg-machine border-border-subtle group hover:border-signal relative border p-6 transition-colors">
-      <div className="absolute top-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-100">
-        <ArrowUpRight size={24} className="text-signal" />
+    <motion.div 
+      whileHover={{ y: -5 }}
+      className="bg-white soft-shadow group relative rounded-[2rem] p-8 transition-all"
+    >
+      <div className="bg-mint absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-xl opacity-0 transition-opacity group-hover:opacity-100">
+        <ArrowUpRight size={16} className="text-foreground/40" />
       </div>
-      <div className="mb-1 text-4xl leading-none font-black uppercase italic">
+      
+      <div className="text-serif text-4xl font-black tracking-tight text-foreground mb-4">
         {value}
       </div>
-      <div className="text-signal font-mono text-[10px] font-bold tracking-widest uppercase">
-        {label} [{unit}]
+      
+      <div className="flex items-center gap-2">
+        <TrendingUp size={12} className="text-rose-300" />
+        <div className="text-foreground/30 font-bold text-[10px] uppercase tracking-widest">
+          {label} <span className="opacity-40 italic">({unit})</span>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

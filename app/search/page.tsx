@@ -1,6 +1,6 @@
 import { prisma } from "@/libs/prisma";
 import Link from "next/link";
-import { Search, Radio, Activity, ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import { Search, Radio, Activity } from "lucide-react";
 import { Suspense } from "react";
 
 import { ListingCard } from "@/components/listings/listing-card";

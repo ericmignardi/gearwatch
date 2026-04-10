@@ -34,12 +34,10 @@ Respond only in JSON with keys: recommendation, confidence, rationale, fairMarke
     const result = await model.generateContent(prompt);
     const response = result.response.text();
 
-    // Clean JSON response
-    const cleanedResponse = response
-      .replace(/^```json\n/, '')
-      .replace(/\n```$/, '');
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found in AI response');
 
-    return NextResponse.json(JSON.parse(cleanedResponse));
+    return NextResponse.json(JSON.parse(jsonMatch[0]));
   } catch (error) {
     console.error('AI Insights API Error:', error);
     return NextResponse.json(
