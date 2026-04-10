@@ -1,8 +1,80 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Condition {
+  NEW
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+}
+
+enum Source {
+  REVERB
+  EBAY
+  GUITAR_CENTER
+  SWEETWATER
+  KIJIJI
+  FACEBOOK_MARKETPLACE
+}
+
+model User {
+  id            String       @id @default(uuid())
+  clerkId       String       @unique
+  email         String
+  watchlists    Watchlist[]
+  priceAlerts   PriceAlert[]
+  createdAt     DateTime     @default(now())
+}
+
+model Listing {
+  id            String          @id @default(uuid())
+  title         String
+  brand         String
+  model         String
+  condition     Condition
+  price         Float
+  currency      String          @default("USD")
+  source        Source
+  url           String
+  imageUrl      String?
+  listedAt      DateTime        @default(now())
+  scrapedAt     DateTime        @default(now())
+  isActive      Boolean         @default(true)
+  priceHistory  PriceSnapshot[]
+}
+
+model PriceSnapshot {
+  id        String   @id @default(uuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  price     Float
+  recordedAt DateTime @default(now())
+}
+
+model Watchlist {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  query     String
+  filters   Json?
+  createdAt DateTime @default(now())
+}
+
+model PriceAlert {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  query       String
+  targetPrice Float
+  condition   Condition
+  sources     Json?
+  isActive    Boolean   @default(true)
+  triggeredAt DateTime?
 }

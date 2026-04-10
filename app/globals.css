@@ -1,25 +1,85 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-syne), ui-sans-serif, system-ui;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+  
+  --color-obsidian: #050505;
+  --color-machine: #121212;
+  --color-signal: #FF5C00;
+  --color-glass: rgba(255, 255, 255, 0.03);
+  --color-border-subtle: #1f1f1f;
+  
+  --animate-shimmer: shimmer 8s infinite linear;
+  --animate-pulse-subtle: pulse-subtle 4s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050505;
+  --foreground: #f0f0f0;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-google-sans);
-}
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "ss01", "ss02", "cv01";
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Grainy texture overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 15px var(--color-signal);
+  }
+  
+  .glass-panel {
+    background: var(--color-glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-border-subtle);
+  }
+  
+  .mask-radial {
+    mask-image: radial-gradient(circle at center, black 0%, transparent 100%);
+  }
+
+  .bracket-border {
+    position: relative;
+  }
+  
+  .bracket-border::before,
+  .bracket-border::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: var(--color-signal);
+    pointer-events: none;
+  }
+
+  .bracket-top-left::before { top: -2px; left: -2px; border-top: 2px solid; border-left: 2px solid; }
+  .bracket-bottom-right::after { bottom: -2px; right: -2px; border-bottom: 2px solid; border-right: 2px solid; }
 }
