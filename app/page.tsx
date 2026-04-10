@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, Sparkles, TrendingUp, ShieldCheck, Heart } from 'lucide-react';
+import { Search, Sparkles, TrendingUp, ShieldCheck } from 'lucide-react';
 import { SignInButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import Form from 'next/form';

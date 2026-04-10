@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
-import { Prisma, Condition, Source } from "@prisma/client";
+import { Condition, Source } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
   const pageSize = 10;
 
-  const where: Prisma.ListingWhereInput = {
+  const where: any = {
     title: { contains: q, mode: "insensitive" },
   };
   
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   if (condition) where.condition = condition as Condition;
   if (minPrice) where.price = { gte: parseFloat(minPrice) };
   if (maxPrice) {
-    where.price = { ...(where.price as object), lte: parseFloat(maxPrice) };
+    where.price = { ...where.price, lte: parseFloat(maxPrice) };
   }
 
   const listings = await prisma.listing.findMany({

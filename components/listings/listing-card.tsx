@@ -1,6 +1,6 @@
 'use client';
 
-import { TrendingUp, ExternalLink, Calendar, Heart, Sparkles } from 'lucide-react';
+import { TrendingUp, ExternalLink, Heart, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 
