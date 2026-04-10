@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
-import { Condition, Source } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -16,8 +15,8 @@ export async function GET(req: NextRequest) {
     title: { contains: q, mode: "insensitive" },
   };
   
-  if (source) where.source = { in: source as Source[] };
-  if (condition) where.condition = condition as Condition;
+  if (source) where.source = { in: source };
+  if (condition) where.condition = condition;
   if (minPrice) where.price = { gte: parseFloat(minPrice) };
   if (maxPrice) {
     where.price = { ...where.price, lte: parseFloat(maxPrice) };

@@ -1,9 +1,8 @@
 import { prisma } from './prisma';
-import { Condition, Source } from '@prisma/client';
 import { ScrapedListing } from './scrapers/kijiji';
 import { parseGearTitle } from './ai-parser';
 
-export async function ingestListings(scrapedData: ScrapedListing[], source: Source) {
+export async function ingestListings(scrapedData: ScrapedListing[], source: any) {
   const results = {
     created: 0,
     updated: 0,
@@ -54,7 +53,7 @@ export async function ingestListings(scrapedData: ScrapedListing[], source: Sour
             title: item.title,
             brand: brand || 'Unknown', 
             model: model || 'Unknown', 
-            condition: Condition.GOOD, 
+            condition: 'GOOD' as any, 
             price: item.price,
             source: source,
             url: item.url,
