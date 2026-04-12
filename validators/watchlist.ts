@@ -1,10 +1,10 @@
-import { z } from "zod";
+import z from 'zod';
 
 export const WatchlistSchema = z.object({
   id: z.string().uuid().optional(),
   userId: z.string().uuid(),
   query: z.string().min(3),
-  filters: z.record(z.any()).optional().nullable(),
+  filters: z.record(z.string(), z.any()).optional().nullable(),
   createdAt: z.date().optional(),
 });
 

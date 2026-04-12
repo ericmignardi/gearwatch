@@ -24,11 +24,23 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "libs/**/*.ts",
+    "stores/**/*.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "types/**/*.ts",
+    "validators/**/*.ts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "**/*.config.ts",
+    "**/*.config.mjs",
+    "**/*.config.js"
+  ]
 }

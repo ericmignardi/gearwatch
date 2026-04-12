@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { ConditionSchema } from "./listing";
+import z from 'zod';
+import { ConditionSchema } from './listing';
 
 export const PriceAlertSchema = z.object({
   id: z.string().uuid().optional(),

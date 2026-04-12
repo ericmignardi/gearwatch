@@ -4,22 +4,24 @@ import { ListingCard } from "@/components/listings/listing-card";
 
 describe("ListingCard Component", () => {
   const mockListing = {
-    id: "1",
-    title: "Gibson Les Paul",
+    id: "123",
+    title: "Gibson Les Paul Standard",
     price: 2500,
     source: "REVERB",
-    // TODO: Add other necessary props
   };
 
-  it("should render listing title and price correctly", () => {
-    // TODO: Implement test
+  it("renders the title and price correctly", () => {
+    render(<ListingCard item={mockListing} />);
+    
+    expect(screen.getByText("Gibson Les Paul Standard")).toBeDefined();
+    expect(screen.getByText("$2,500")).toBeDefined();
+    expect(screen.getByText("REVERB")).toBeDefined();
   });
 
-  it("should navigate to detail page on click", () => {
-    // TODO: Implement test
-  });
-
-  it("should display a badge for special conditions", () => {
-    // TODO: Implement test
+  it("contains a link to the gear detail page", () => {
+    render(<ListingCard item={mockListing} />);
+    
+    const link = screen.getByRole("link");
+    expect(link.getAttribute("href")).toBe("/gear/123");
   });
 });

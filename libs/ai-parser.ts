@@ -5,10 +5,12 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export async function parseGearTitle(title: string) {
   const prompt = `
-    Extract the brand and specific model from this musical instrument listing title: "${title}".
-    Return the result strictly as a JSON object with "brand" and "model" keys.
+    Extract the brand, specific model, and condition from this musical instrument listing title: "${title}".
+    Return the result strictly as a JSON object with "brand", "model", and "condition" keys.
+    For condition, map it to one of: NEW, EXCELLENT, GOOD, FAIR, POOR.
     If the brand or model is not clear, use "Unknown". 
-    Example: "Fender Player Stratocaster" -> {"brand": "Fender", "model": "Player Stratocaster"}
+    If the condition is not clear, use "GOOD".
+    Example: "Fender Player Stratocaster" -> {"brand": "Fender", "model": "Player Stratocaster", "condition": "GOOD"}
   `;
 
   try {
@@ -19,6 +21,6 @@ export async function parseGearTitle(title: string) {
     return JSON.parse(cleanJson);
   } catch (error) {
     console.error("AI Parsing Error:", error);
-    return { brand: "Unknown", model: "Unknown" };
+    return { brand: "Unknown", model: "Unknown", condition: "GOOD" };
   }
 }

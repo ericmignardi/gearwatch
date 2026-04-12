@@ -1,12 +1,5 @@
 import * as cheerio from 'cheerio';
-
-export interface ScrapedListing {
-  title: string;
-  price: number;
-  url: string;
-  imageUrl?: string;
-  location?: string;
-}
+import { ScrapedListing } from '@/types/scraping';
 
 interface KijijiAd {
   title?: string;
@@ -44,9 +37,11 @@ export async function scrapeKijiji(query: string): Promise<ScrapedListing[]> {
 
     const data = JSON.parse(scriptContent);
     
-    // Kijiji often nests ads here
+    // Kijiji often nests ads here, but paths can vary
     const ads: KijijiAd[] = data.props?.pageProps?.initialInternalData?.ads || 
                            data.props?.pageProps?.initialData?.ads || 
+                           data.props?.pageProps?.results ||
+                           data.props?.pageProps?.ads ||
                            [];
 
     return ads.map((ad: KijijiAd) => ({
