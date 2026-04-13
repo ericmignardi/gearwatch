@@ -47,14 +47,22 @@ export async function ingestListings(scrapedData: ScrapedListing[], source: Sour
         }
       } else {
         // Use AI to parse the title for brand and model
-        const { brand, model } = await parseGearTitle(item.title);
+        const parsedData = await parseGearTitle(item.title);
+        
+        // Skip if not recognized as gear
+        if (!parsedData) {
+          results.skipped++;
+          continue;
+        }
+
+        const { brand, model, condition } = parsedData;
 
         await prisma.listing.create({
           data: {
             title: item.title,
             brand: brand || 'Unknown', 
             model: model || 'Unknown', 
-            condition: Condition.GOOD, 
+            condition: (condition as Condition) || Condition.GOOD, 
             price: item.price,
             source: source,
             url: item.url,

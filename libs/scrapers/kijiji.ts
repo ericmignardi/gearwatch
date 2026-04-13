@@ -1,59 +1,77 @@
-import * as cheerio from 'cheerio';
+import { chromium } from '@playwright/test';
 import { ScrapedListing } from '@/types/scraping';
-
-interface KijijiAd {
-  title?: string;
-  price?: {
-    amount: number;
-  };
-  url?: string;
-  image?: string;
-  images?: Array<{ url: string }>;
-  location?: {
-    displayName?: string;
-    name?: string;
-  };
-}
+import { getRandomUserAgent, simulateHumanBehavior, STEALTH_CONTEXT_OPTIONS } from './utils';
 
 export async function scrapeKijiji(query: string): Promise<ScrapedListing[]> {
-  const slug = query.toLowerCase().replace(/\s+/g, '-');
-  // Kijiji Canada-wide Guitars category (c613)
-  const url = `https://www.kijiji.ca/b-guitars/canada/${slug}/k0c613l0`;
+  const encodedQuery = encodeURIComponent(query);
+  const url = `https://www.kijiji.ca/b-search.html?searchTerm=${encodedQuery}`;
 
+  let browser;
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      },
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({
+      ...STEALTH_CONTEXT_OPTIONS,
+      userAgent: getRandomUserAgent(),
+    });
+    const page = await context.newPage();
+
+    console.log(`Navigating to Kijiji: ${url}...`);
+    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+    if (!response || response.status() >= 400) {
+      console.error(`Kijiji responded with status ${response?.status()}. Blocking may be in effect.`);
+      return [];
+    }
+
+    try {
+      await page.waitForSelector('[data-testid^="listing-card"], .search-item', { timeout: 15000 });
+    } catch (e) {
+      console.warn('Timeout waiting for Kijiji selectors. Layout may have changed or access blocked.');
+    }
+
+    await simulateHumanBehavior(page);
+
+    const listings = await page.evaluate(() => {
+      const items: any[] = [];
+      const containers = document.querySelectorAll('[data-testid^="listing-card"], .search-item');
+
+      containers.forEach(el => {
+        const titleEl = el.querySelector('[data-testid="listing-title"], .title');
+        const title = titleEl ? (titleEl as HTMLElement).innerText.trim() : '';
+
+        const priceEl = el.querySelector('[data-testid="listing-price"], .price');
+        const rawPrice = priceEl ? (priceEl as HTMLElement).innerText : '0';
+        const priceMatch = rawPrice.replace(/[^\d.]/g, '');
+        const price = parseFloat(priceMatch) || 0;
+
+        const linkEl = el.querySelector('a[data-testid="listing-link"], a.title') as HTMLAnchorElement;
+        const link = linkEl ? linkEl.href : '';
+
+        const imgEl = el.querySelector('img');
+        const imageUrl = imgEl ? (imgEl as HTMLImageElement).src : '';
+
+        const locEl = el.querySelector('[data-testid="listing-location"], .location');
+        const location = locEl ? (locEl as HTMLElement).innerText.trim() : 'Kijiji';
+
+        if (title && link && price > 0) {
+          items.push({
+            title,
+            price,
+            url: link,
+            imageUrl,
+            location
+          });
+        }
+      });
+      return items;
     });
 
-    if (!response.ok) throw new Error(`Kijiji fetch failed: ${response.statusText}`);
-
-    const html = await response.text();
-    const $ = cheerio.load(html);
-    
-    const scriptContent = $('#__NEXT_DATA__').html();
-    if (!scriptContent) throw new Error('Could not find __NEXT_DATA__ script tag');
-
-    const data = JSON.parse(scriptContent);
-    
-    // Kijiji often nests ads here, but paths can vary
-    const ads: KijijiAd[] = data.props?.pageProps?.initialInternalData?.ads || 
-                           data.props?.pageProps?.initialData?.ads || 
-                           data.props?.pageProps?.results ||
-                           data.props?.pageProps?.ads ||
-                           [];
-
-    return ads.map((ad: KijijiAd) => ({
-      title: ad.title || '',
-      price: (ad.price?.amount || 0) / 100, // Kijiji often sends price in cents in the JSON
-      url: ad.url ? (ad.url.startsWith('http') ? ad.url : `https://www.kijiji.ca${ad.url}`) : '',
-      imageUrl: ad.image || ad.images?.[0]?.url,
-      location: ad.location?.displayName || ad.location?.name,
-    })).filter((ad: ScrapedListing) => ad.title && ad.url);
+    return listings;
 
   } catch (error) {
-    console.error('Kijiji Scraper Error:', error);
+    console.error('Kijiji Playwright Scraper Error:', error);
     return [];
+  } finally {
+    if (browser) await browser.close();
   }
 }

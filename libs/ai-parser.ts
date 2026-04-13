@@ -1,26 +1,45 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// Using gemini-1.5-flash for cost-efficiency and faster performance on simple title parsing
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export async function parseGearTitle(title: string) {
   const prompt = `
-    Extract the brand, specific model, and condition from this musical instrument listing title: "${title}".
-    Return the result strictly as a JSON object with "brand", "model", and "condition" keys.
-    For condition, map it to one of: NEW, EXCELLENT, GOOD, FAIR, POOR.
-    If the brand or model is not clear, use "Unknown". 
-    If the condition is not clear, use "GOOD".
-    Example: "Fender Player Stratocaster" -> {"brand": "Fender", "model": "Player Stratocaster", "condition": "GOOD"}
+    Analyze this marketplace listing title: "${title}"
+    
+    1. Determine if this is a musical instrument (Guitar, Bass, Amp, Pedal, etc.). 
+       If it is an accessory (case, T-shirt, pick, strap, strings, part/screw) or unrelated, return {"isGear": false}.
+    
+    2. If it IS gear:
+       - Extract the brand (e.g., Fender, Gibson).
+       - Extract the specific model (e.g., Stratocaster, Les Paul Standard, Silver Sky).
+       - Map condition to one of: NEW, EXCELLENT, GOOD, FAIR, POOR. (Default to GOOD).
+    
+    Return strictly JSON:
+    {"isGear": boolean, "brand": string, "model": string, "condition": string}
   `;
 
   try {
     const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    // Remove potential markdown formatting from the response
+    const response = await result.response;
+    const text = response.text();
+    
+    // Clean potential markdown and parse
     const cleanJson = text.replace(/```json|```/g, "").trim();
-    return JSON.parse(cleanJson);
+    const parsed = JSON.parse(cleanJson);
+    
+    if (parsed.isGear === false) return null;
+    
+    return {
+      brand: parsed.brand || "Unknown",
+      model: parsed.model || "Unknown",
+      condition: parsed.condition || "GOOD"
+    };
   } catch (error) {
     console.error("AI Parsing Error:", error);
+    // On error, we return a fallback rather than crashing, 
+    // but the Pro model is highly stable.
     return { brand: "Unknown", model: "Unknown", condition: "GOOD" };
   }
 }

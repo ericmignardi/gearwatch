@@ -1,68 +1,73 @@
-import * as cheerio from 'cheerio';
+import { chromium } from '@playwright/test';
 import { ScrapedListing } from '@/types/scraping';
-
-interface SweetwaterProduct {
-  name?: string;
-  price?: string;
-  url?: string;
-  image?: {
-    src?: string;
-  };
-}
-
-interface SweetwaterInitialState {
-  search?: {
-    results?: {
-      products?: SweetwaterProduct[];
-    };
-  };
-}
+import { getRandomUserAgent, simulateHumanBehavior, STEALTH_CONTEXT_OPTIONS } from './utils';
 
 export async function scrapeSweetwater(query: string): Promise<ScrapedListing[]> {
   const encodedQuery = encodeURIComponent(query);
   const url = `https://www.sweetwater.com/store/search.php?s=${encodedQuery}`;
 
+  let browser;
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      },
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({
+      ...STEALTH_CONTEXT_OPTIONS,
+      userAgent: getRandomUserAgent(),
     });
+    const page = await context.newPage();
 
-    if (!response.ok) throw new Error(`Sweetwater fetch failed: ${response.statusText}`);
+    console.log(`Navigating to Sweetwater: ${url}...`);
+    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-    const html = await response.text();
-    const $ = cheerio.load(html);
-    
-    let initialState: SweetwaterInitialState | null = null;
-    $('script').each((_, el) => {
-      const content = $(el).html();
-      if (content?.includes('window.__INITIAL_STATE__')) {
-        const match = content.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});/);
-        if (match && match[1]) {
-          try {
-            initialState = JSON.parse(match[1]);
-          } catch {
-            console.error('Failed to parse Sweetwater __INITIAL_STATE__ JSON');
-          }
+    if (!response || response.status() >= 400) {
+      console.error(`Sweetwater responded with status ${response?.status()}. Blocking may be in effect.`);
+      return [];
+    }
+
+    try {
+      await page.waitForSelector('.product-card, [class*="product-card"]', { timeout: 15000 });
+    } catch (e) {
+      console.warn('Timeout waiting for Sweetwater selectors. Page may have changed or bot detection triggered.');
+    }
+
+    await simulateHumanBehavior(page);
+
+    const listings = await page.evaluate(() => {
+      const items: any[] = [];
+      const productCards = document.querySelectorAll('.product-card, [class*="product-card"]');
+
+      productCards.forEach(el => {
+        const titleEl = el.querySelector('.product-card__name a, [class*="product-card__name"] a, a[href*="/store/detail/"]');
+        const title = titleEl ? (titleEl as HTMLElement).innerText.trim() : '';
+
+        const priceEl = el.querySelector('.product-card__price, [class*="product-card__price"], .price');
+        const rawPrice = priceEl ? (priceEl as HTMLElement).innerText : '0';
+        const priceMatch = rawPrice.replace(/[^\d.]/g, '');
+        const price = parseFloat(priceMatch) || 0;
+
+        const link = titleEl ? (titleEl as HTMLAnchorElement).href : '';
+
+        const imgEl = el.querySelector('.product-card__image img, img[src*="sweetwater.com/images/items/"]');
+        const imageUrl = imgEl ? (imgEl as HTMLImageElement).src : '';
+
+        if (title && link && price > 0) {
+          items.push({
+            title,
+            price,
+            url: link,
+            imageUrl,
+            location: 'Sweetwater'
+          });
         }
-      }
+      });
+      return items;
     });
 
-    if (!initialState) throw new Error('Could not find window.__INITIAL_STATE__ on Sweetwater');
-
-    const products = (initialState as SweetwaterInitialState).search?.results?.products || [];
-
-    return products.map((p: SweetwaterProduct) => ({
-      title: p.name || '',
-      price: parseFloat(p.price || '0'),
-      url: p.url ? `https://www.sweetwater.com${p.url}` : '',
-      imageUrl: p.image?.src,
-      location: 'Sweetwater',
-    })).filter((l: ScrapedListing) => l.title && l.url);
+    return listings;
 
   } catch (error) {
-    console.error('Sweetwater Scraper Error:', error);
+    console.error('Sweetwater Playwright Scraper Error:', error);
     return [];
+  } finally {
+    if (browser) await browser.close();
   }
 }
