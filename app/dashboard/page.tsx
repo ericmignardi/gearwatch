@@ -6,8 +6,8 @@ export default async function DashboardPage() {
   const { userId } = await auth();
   if (!userId)
     return (
-      <div className="bg-obsidian text-signal flex min-h-screen animate-pulse items-center justify-center font-mono">
-        ERROR_401: UNAUTHORIZED_ACCESS
+      <div className="bg-google-light text-google-dark flex min-h-screen items-center justify-center font-medium">
+        Error: Unauthorized Access
       </div>
     );
 
@@ -20,8 +20,8 @@ export default async function DashboardPage() {
     const clerkUser = await currentUser();
     if (!clerkUser)
       return (
-        <div className="bg-obsidian text-signal flex min-h-screen items-center justify-center font-mono">
-          ERROR_401: UNAUTHORIZED_ACCESS
+        <div className="bg-google-light text-google-dark flex min-h-screen items-center justify-center font-medium">
+          Error: Unauthorized Access
         </div>
       );
 

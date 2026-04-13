@@ -1,89 +1,97 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: var(--font-display), serif;
   --font-sans: var(--font-sans), ui-sans-serif, system-ui;
-  --font-mono: var(--font-mono), ui-monospace, monospace;
+  --font-serif: var(--font-serif), Georgia, serif;
   
-  --color-obsidian: #FCF9F2; /* Actually Alabaster */
-  --color-machine: #F3F5FF; /* Pale Periwinkle */
-  --color-signal: #FFD1DC; /* Pastel Rose */
-  --color-mint: #E0F2F1;
-  --color-lavender: #F3E5F5;
-  --color-peach: #FFF3E0;
-  --color-border-subtle: #E8E2D6;
+  /* Organic / Tactile Palette */
+  --color-brand-primary: #C15439; /* Terracotta */
+  --color-brand-secondary: #556B2F; /* Sage */
+  --color-bg-base: #F9F8F6; /* Warm Parchment */
+  --color-bg-subtle: #F3F1EC; /* Soft Taupe */
+  --color-text-main: #2C2B29; /* Charcoal */
+  --color-text-muted: #6D6A66; /* Muted Taupe */
+  --color-border-subtle: #E8E5DF; /* Light Earthy Border */
   
-  --animate-shimmer: shimmer 8s infinite linear;
-  --animate-float: float 6s infinite ease-in-out;
-}
-
-@keyframes shimmer {
-  from { background-position: -200% 0; }
-  to { background-position: 200% 0; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  --shadow-diffuse: 0 4px 12px rgba(44, 43, 41, 0.05);
+  --shadow-tactile: 0 2px 4px rgba(44, 43, 41, 0.03), 0 10px 30px rgba(44, 43, 41, 0.05);
 }
 
 :root {
-  --background: #FCF9F2;
-  --foreground: #2D3436;
+  --background: #F9F8F6;
+  --foreground: #2C2B29;
 }
 
 @layer base {
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-feature-settings: "ss01", "ss02", "cv01";
+    font-feature-settings: "ss01", "ss02", "cv01", "calt";
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Soft paper-like texture */
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.05;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    background-blend-mode: overlay;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    letter-spacing: -0.01em;
   }
 }
 
 @layer utilities {
-  .soft-shadow {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  }
-  
-  .puffy-panel {
-    background: white;
-    border-radius: 2rem;
-    padding: 2rem;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
-    border: 1px solid white;
-  }
-  
-  .mask-radial {
-    mask-image: radial-gradient(circle at center, black 0%, transparent 100%);
-  }
-  
-  .text-serif {
-    font-family: var(--font-display);
+  .tactile-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 12px;
+    box-shadow: var(--shadow-tactile);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .pastel-gradient {
-    background: linear-gradient(135deg, #FFD1DC 0%, #E0F2F1 100%);
+  .tactile-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 12px 24px rgba(44, 43, 41, 0.06), 0 20px 50px rgba(44, 43, 41, 0.08);
+  }
+  
+  .paper-panel {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 4px;
+    box-shadow: inset 0 0 10px rgba(44, 43, 41, 0.02);
   }
 
-  .hover-lift {
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  .tactile-button {
+    background-color: var(--color-brand-primary);
+    color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom-width: 3px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(193, 84, 57, 0.2);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .hover-lift:hover {
-    transform: translateY(-4px);
+
+  .tactile-button:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    box-shadow: 0 2px 4px rgba(193, 84, 57, 0.1);
+  }
+
+  .grain-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  .letterpress-text {
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  }
+
+  .debossed-inset {
+    background-color: var(--color-bg-subtle);
+    box-shadow: inset 0 2px 4px rgba(44, 43, 41, 0.05);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 8px;
   }
 }

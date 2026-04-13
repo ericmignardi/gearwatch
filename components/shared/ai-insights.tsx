@@ -47,9 +47,9 @@ export default function AIInsights({ listingId }: { listingId: string }) {
 
   if (loading)
     return (
-      <div className="bg-lavender/30 border-lavender/50 flex flex-col items-center justify-center gap-4 rounded-[2rem] border-2 border-dashed p-10">
-        <Sparkles className="text-rose-300 animate-float h-6 w-6" />
-        <div className="text-foreground/30 font-bold text-[10px] uppercase tracking-[0.4em]">
+      <div className="bg-google-light border-google-border flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed p-10">
+        <Sparkles className="text-google-blue animate-pulse h-6 w-6" />
+        <div className="text-google-gray font-bold text-[10px] uppercase tracking-[0.4em]">
           Synthesizing Intelligence...
         </div>
       </div>
@@ -59,51 +59,51 @@ export default function AIInsights({ listingId }: { listingId: string }) {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="bg-white border-white soft-shadow space-y-6 rounded-[2rem] p-8"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="google-card space-y-6"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-lavender flex h-10 w-10 items-center justify-center rounded-2xl">
-            <BrainCircuit className="text-rose-400 h-5 w-5" />
+          <div className="bg-google-light flex h-10 w-10 items-center justify-center rounded-lg">
+            <BrainCircuit className="text-google-blue h-5 w-5" />
           </div>
-          <h3 className="text-serif text-lg font-black tracking-tight">
+          <h3 className="text-google-dark text-lg font-bold tracking-tight">
             AI Market Synopsis
           </h3>
         </div>
-        <div className="bg-mint/50 text-foreground/40 rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest">
+        <div className="bg-blue-50 text-google-blue rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
           {insights.confidence} Confidence
         </div>
       </div>
 
-      <p className="text-foreground/60 text-sm leading-relaxed font-medium">
+      <p className="text-google-gray text-sm leading-relaxed font-medium">
         {insights.rationale}
       </p>
 
-      <div className="bg-machine flex flex-wrap gap-4 rounded-3xl p-6">
-        <div className="flex-1">
-          <div className="text-foreground/20 mb-1 font-bold text-[9px] uppercase tracking-widest">
+      <div className="bg-google-light grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-xl p-6">
+        <div>
+          <div className="text-google-gray mb-1 font-bold text-[9px] uppercase tracking-widest">
             Verdict
           </div>
-          <div className="text-rose-400 text-sm font-black uppercase italic">
+          <div className="text-google-blue text-sm font-bold uppercase">
             {insights.recommendation}
           </div>
         </div>
-        <div className="flex-1">
-          <div className="text-foreground/20 mb-1 font-bold text-[9px] uppercase tracking-widest">
+        <div>
+          <div className="text-google-gray mb-1 font-bold text-[9px] uppercase tracking-widest">
             Fair Value
           </div>
-          <div className="text-serif text-sm font-black">
+          <div className="text-google-dark text-sm font-bold">
             ${insights.fairMarketPrice?.toLocaleString() || 'N/A'}
           </div>
         </div>
-        <div className="flex-1">
-          <div className="text-foreground/20 mb-1 font-bold text-[9px] uppercase tracking-widest">
+        <div>
+          <div className="text-google-gray mb-1 font-bold text-[9px] uppercase tracking-widest">
             Trajectory
           </div>
-          <div className="flex items-center gap-1 text-sm font-black uppercase italic text-foreground/60">
-            <TrendingUp size={14} className="text-mint" />
+          <div className="flex items-center gap-1 text-sm font-bold uppercase text-google-dark">
+            <TrendingUp size={14} className="text-green-600" />
             {insights.trend}
           </div>
         </div>

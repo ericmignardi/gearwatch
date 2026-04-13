@@ -1,37 +1,40 @@
-"use client";
+'use client';
 
-import { motion } from "motion/react";
-import { Sparkles } from "lucide-react";
-import Link from "next/link";
-import { SignInButton } from "@clerk/nextjs";
+import { motion } from 'motion/react';
+import Link from 'next/link';
+import { SignInButton, UserButton, Show } from '@clerk/nextjs';
 
 export const LandingHeader = () => (
-  <header className="relative z-10 flex items-center justify-between p-8">
+  <header className="fixed top-8 right-0 left-0 z-50 flex justify-center px-6">
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="flex items-center gap-3"
+      initial={{ y: -10, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+      className="flex h-20 w-full max-w-6xl items-center justify-between px-10 bg-white border border-border-subtle rounded-2xl shadow-tactile"
     >
-      <div className="bg-signal shadow-soft flex h-10 w-10 items-center justify-center rounded-2xl">
-        <Sparkles className="text-white h-5 w-5" />
-      </div>
-      <Link href="/" className="text-serif text-2xl font-black tracking-tight">
-        Gear<span className="text-rose-400">Watch</span>
-      </Link>
-    </motion.div>
-
-    <nav className="flex items-center gap-8 font-medium text-sm">
       <Link
-        href="/dashboard"
-        className="text-foreground/60 hover:text-foreground transition-colors"
+        href="/"
+        className="text-text-main text-3xl font-serif font-medium tracking-tight italic"
       >
-        Dashboard
+        Gear<span className="text-brand-primary not-italic font-sans font-black">Watch</span>
       </Link>
-      <SignInButton mode="modal">
-        <button className="bg-white text-foreground soft-shadow hover-lift rounded-full px-8 py-3 text-sm font-bold transition-all">
-          Sign In
-        </button>
-      </SignInButton>
-    </nav>
+
+      <nav className="text-text-muted flex items-center gap-10 text-[13px] font-bold tracking-widest uppercase letterpress-text">
+        <Show when="signed-out">
+          <SignInButton mode="modal">
+            <button className="bg-brand-primary rounded-xl px-8 py-3 text-white shadow-lg transition-all hover:bg-brand-primary/90 active:scale-95 border-b-4 border-black/10">
+              Sign In
+            </button>
+          </SignInButton>
+        </Show>
+
+        <Show when="signed-in">
+          <Link href={'/dashboard'} className="hover:text-brand-primary transition-colors italic font-serif text-lg lowercase tracking-tight">
+            Dashboard
+          </Link>
+          <UserButton />
+        </Show>
+      </nav>
+    </motion.div>
   </header>
 );

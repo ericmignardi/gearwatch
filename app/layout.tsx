@@ -1,22 +1,15 @@
 import type { Metadata } from "next";
-import { Fraunces, Outfit, JetBrains_Mono } from "next/font/google";
+import { Lora, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
-const fraunces = Fraunces({
-  variable: "--font-display",
+const lora = Lora({
+  variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
-const outfit = Outfit({
+const dmSans = DM_Sans({
   variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -32,9 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans selection:bg-rose-200">
-        <ClerkProvider>{children}</ClerkProvider>
+    <html lang="en" className={`${lora.variable} ${dmSans.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col font-sans selection:bg-orange-100/50">
+        <div className="grain-overlay" />
+        <ClerkProvider afterSignOutUrl="/">{children}</ClerkProvider>
       </body>
     </html>
   );

@@ -37,7 +37,7 @@ export default function DashboardClient({ user }: { user: DashboardUser }) {
   ];
 
   return (
-    <div className="bg-obsidian text-foreground selection:bg-rose-100 min-h-screen font-sans">
+    <div className="bg-bg-base text-text-main min-h-screen font-sans">
       <DashboardHeader clerkId={user.clerkId} />
 
       <main className="mx-auto grid max-w-7xl grid-cols-1 gap-12 p-8 lg:grid-cols-12">
@@ -57,7 +57,7 @@ export default function DashboardClient({ user }: { user: DashboardUser }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
               {activeTab === "Overview" && (
                 <OverviewTab watchlistCount={user.watchlists.length} />
@@ -77,13 +77,13 @@ export default function DashboardClient({ user }: { user: DashboardUser }) {
 
       {/* Subtle Floating Detail */}
       <div className="fixed bottom-8 right-8 z-50">
-        <div className="bg-white/80 soft-shadow backdrop-blur-md rounded-full px-6 py-3 flex items-center gap-4 text-xs font-bold text-foreground/40">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-mint rounded-full animate-pulse" />
-            Core Engine v1.0.4
+        <div className="bg-white border border-border-subtle shadow-tactile rounded-xl px-6 py-4 flex items-center gap-6 text-[10px] font-bold text-text-muted">
+          <div className="flex items-center gap-2 uppercase tracking-widest letterpress-text">
+            <div className="w-2 h-2 bg-brand-secondary rounded-full" />
+            System Active
           </div>
-          <div className="w-px h-4 bg-border-subtle" />
-          Latency: 12ms
+          <div className="w-px h-6 bg-border-subtle" />
+          <span className="font-serif italic text-sm">v1.0.4</span>
         </div>
       </div>
     </div>

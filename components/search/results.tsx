@@ -16,13 +16,10 @@ export const SearchResults = async ({ query }: SearchResultsProps) => {
 
   if (listings.length === 0) {
     return (
-      <div className="p-20 border-2 border-dashed border-border-subtle text-center">
-        <div className="font-mono text-xs uppercase tracking-widest text-foreground/20 italic mb-4">
-          {/* // ZERO_MATCHES_INTERCEPTED */}
-        </div>
-        <p className="text-foreground/40 max-w-sm mx-auto">
-          The algorithm could not find any active listings matching your query
-          parameters. Adjust filters and re-scan.
+      <div className="p-20 border border-dashed border-google-border text-center bg-white rounded-xl">
+        <p className="text-google-gray max-w-sm mx-auto font-medium">
+          We couldn&apos;t find any active listings matching your search. 
+          Try adjusting your keywords or filters.
         </p>
       </div>
     );
