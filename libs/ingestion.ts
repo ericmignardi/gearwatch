@@ -46,9 +46,12 @@ export async function ingestListings(scrapedData: ScrapedListing[], source: Sour
           results.skipped++;
         }
       } else {
+        // Small delay to prevent hitting AI rate limits too hard (especially on free tier)
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         // Use AI to parse the title for brand and model
         const parsedData = await parseGearTitle(item.title);
-        
+
         // Skip if not recognized as gear
         if (!parsedData) {
           results.skipped++;
