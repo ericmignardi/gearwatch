@@ -2,9 +2,21 @@
 
 import { motion } from "motion/react";
 import { Search, ArrowRight, Activity } from "lucide-react";
-import { SignInButton } from "@clerk/nextjs";
+import { SignInButton, Show } from "@clerk/nextjs";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const Hero = () => {
+  const [query, setQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
+
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-32 pb-20 px-6">
       <div className="relative z-20 text-center max-w-5xl mx-auto">
@@ -42,28 +54,60 @@ export const Hero = () => {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto max-w-2xl group cursor-pointer"
+          className="mx-auto max-w-2xl group"
         >
-          <SignInButton mode="modal">
-            <div className="flex flex-col md:flex-row items-center p-1 bg-white border border-border-subtle rounded-2xl shadow-tactile transition-all duration-700 hover:shadow-2xl hover:border-brand-primary/20">
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <div className="flex flex-col md:flex-row items-center p-1 bg-white border border-border-subtle rounded-2xl shadow-tactile transition-all duration-700 hover:shadow-2xl hover:border-brand-primary/20 cursor-pointer">
+                <div className="flex w-full items-center">
+                  <div className="text-text-muted/40 pl-6 transition-colors group-hover:text-brand-primary">
+                    <Search size={20} strokeWidth={2.5} />
+                  </div>
+
+                  <div className="w-full px-5 py-6 text-xl font-normal text-text-muted/40 text-left select-none italic font-serif">
+                    Search for gear, brands, or models...
+                  </div>
+                </div>
+
+                <div className="w-full md:w-auto bg-brand-primary text-white relative flex h-16 items-center justify-center gap-3 overflow-hidden rounded-xl px-10 font-bold transition-all group-hover:bg-brand-primary/90 active:scale-[0.98] m-1">
+                  <span className="relative z-10 whitespace-nowrap">Join to Search</span>
+                  <ArrowRight size={20} strokeWidth={3} className="relative z-10" />
+                </div>
+              </div>
+            </SignInButton>
+          </Show>
+
+          <Show when="signed-in">
+            <form 
+              onSubmit={handleSearch}
+              className="flex flex-col md:flex-row items-center p-1 bg-white border border-border-subtle rounded-2xl shadow-tactile transition-all duration-700 focus-within:shadow-2xl focus-within:border-brand-primary/20"
+            >
               <div className="flex w-full items-center">
                 <div className="text-text-muted/40 pl-6 transition-colors group-hover:text-brand-primary">
                   <Search size={20} strokeWidth={2.5} />
                 </div>
 
-                <div className="w-full px-5 py-6 text-xl font-normal text-text-muted/40 text-left select-none italic font-serif">
-                  Search for gear, brands, or models...
-                </div>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search for gear, brands, or models..."
+                  className="w-full px-5 py-6 text-xl font-normal text-text-main text-left italic font-serif bg-transparent border-none focus:ring-0 focus:outline-none placeholder:text-text-muted/40"
+                />
               </div>
 
-              <div className="w-full md:w-auto bg-brand-primary text-white relative flex h-16 items-center justify-center gap-3 overflow-hidden rounded-xl px-10 font-bold transition-all group-hover:bg-brand-primary/90 active:scale-[0.98] m-1">
-                <span className="relative z-10 whitespace-nowrap">Join to Search</span>
+              <button 
+                type="submit"
+                className="w-full md:w-auto bg-brand-primary text-white relative flex h-16 items-center justify-center gap-3 overflow-hidden rounded-xl px-10 font-bold transition-all hover:bg-brand-primary/90 active:scale-[0.98] m-1 cursor-pointer"
+              >
+                <span className="relative z-10 whitespace-nowrap">Search Now</span>
                 <ArrowRight size={20} strokeWidth={3} className="relative z-10" />
-              </div>
-            </div>
-          </SignInButton>
+              </button>
+            </form>
+          </Show>
         </motion.div>
       </div>
     </section>
   );
 };
+

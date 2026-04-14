@@ -7,10 +7,10 @@ export const SearchSidebarInfo = () => (
       { label: "Load", val: "0.42" },
     ].map((item) => (
       <div key={item.label}>
-        <div className="font-mono text-[8px] uppercase tracking-[0.3em] text-foreground/20 mb-1">
+        <div className="font-sans text-[8px] uppercase tracking-[0.3em] text-text-muted mb-1 font-bold">
           {item.label}
         </div>
-        <div className="font-mono text-xs uppercase text-signal font-black">
+        <div className="font-sans text-[10px] uppercase text-brand-primary font-black tracking-widest">
           {item.val}
         </div>
       </div>

@@ -16,12 +16,7 @@ enum Condition {
 }
 
 enum Source {
-  REVERB
-  EBAY
-  GUITAR_CENTER
-  SWEETWATER
   KIJIJI
-  FACEBOOK_MARKETPLACE
 }
 
 model User {

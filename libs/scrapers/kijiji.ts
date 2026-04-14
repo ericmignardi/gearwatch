@@ -1,77 +1,63 @@
-import { chromium } from '@playwright/test';
+import * as cheerio from 'cheerio';
 import { ScrapedListing } from '@/types/scraping';
-import { getRandomUserAgent, simulateHumanBehavior, STEALTH_CONTEXT_OPTIONS } from './utils';
+import { getRandomUserAgent } from './utils';
 
+/**
+ * Lightweight Cheerio-based scraper for Kijiji.
+ */
 export async function scrapeKijiji(query: string): Promise<ScrapedListing[]> {
   const encodedQuery = encodeURIComponent(query);
-  const url = `https://www.kijiji.ca/b-search.html?searchTerm=${encodedQuery}`;
+  // categoryId 613 is Musical Instruments > Guitars
+  const url = `https://www.kijiji.ca/b-search.html?searchTerm=${encodedQuery}&categoryId=613`;
 
-  let browser;
   try {
-    browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext({
-      ...STEALTH_CONTEXT_OPTIONS,
-      userAgent: getRandomUserAgent(),
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': getRandomUserAgent(),
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
     });
-    const page = await context.newPage();
 
-    console.log(`Navigating to Kijiji: ${url}...`);
-    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-
-    if (!response || response.status() >= 400) {
-      console.error(`Kijiji responded with status ${response?.status()}. Blocking may be in effect.`);
+    if (!response.ok) {
+      console.error(`Kijiji responded with status ${response.status}`);
       return [];
     }
 
-    try {
-      await page.waitForSelector('[data-testid^="listing-card"], .search-item', { timeout: 15000 });
-    } catch (e) {
-      console.warn('Timeout waiting for Kijiji selectors. Layout may have changed or access blocked.');
-    }
+    const html = await response.text();
+    const $ = cheerio.load(html);
+    const listings: ScrapedListing[] = [];
 
-    await simulateHumanBehavior(page);
+    $('[data-testid^="listing-card"]').each((_, el) => {
+      const title = $(el).find('[data-testid="listing-title"]').text().trim();
+      const priceText = $(el).find('[data-testid="listing-price"]').text().trim();
+      const relativeUrl = $(el).find('a[data-testid="listing-link"]').attr('href');
+      const imageUrl = $(el).find('img').attr('src');
+      const location = $(el).find('[data-testid="listing-location"]').text().trim();
 
-    const listings = await page.evaluate(() => {
-      const items: any[] = [];
-      const containers = document.querySelectorAll('[data-testid^="listing-card"], .search-item');
+      let price = 0;
+      if (priceText.toLowerCase().includes('free')) {
+        price = 0;
+      } else {
+        price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
+      }
 
-      containers.forEach(el => {
-        const titleEl = el.querySelector('[data-testid="listing-title"], .title');
-        const title = titleEl ? (titleEl as HTMLElement).innerText.trim() : '';
+      const fullUrl = relativeUrl ? (relativeUrl.startsWith('http') ? relativeUrl : `https://www.kijiji.ca${relativeUrl}`) : '';
 
-        const priceEl = el.querySelector('[data-testid="listing-price"], .price');
-        const rawPrice = priceEl ? (priceEl as HTMLElement).innerText : '0';
-        const priceMatch = rawPrice.replace(/[^\d.]/g, '');
-        const price = parseFloat(priceMatch) || 0;
-
-        const linkEl = el.querySelector('a[data-testid="listing-link"], a.title') as HTMLAnchorElement;
-        const link = linkEl ? linkEl.href : '';
-
-        const imgEl = el.querySelector('img');
-        const imageUrl = imgEl ? (imgEl as HTMLImageElement).src : '';
-
-        const locEl = el.querySelector('[data-testid="listing-location"], .location');
-        const location = locEl ? (locEl as HTMLElement).innerText.trim() : 'Kijiji';
-
-        if (title && link && price > 0) {
-          items.push({
-            title,
-            price,
-            url: link,
-            imageUrl,
-            location
-          });
-        }
-      });
-      return items;
+      if (title && fullUrl && price > 0) {
+        listings.push({
+          title,
+          price,
+          url: fullUrl,
+          imageUrl: imageUrl || '',
+          location: location || 'Kijiji'
+        });
+      }
     });
 
     return listings;
-
   } catch (error) {
-    console.error('Kijiji Playwright Scraper Error:', error);
+    console.error('Kijiji Scraper Error:', error);
     return [];
-  } finally {
-    if (browser) await browser.close();
   }
 }
